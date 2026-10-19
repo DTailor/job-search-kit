@@ -1,6 +1,6 @@
 # Application writing
 
-Draft only what the form asks for. Read the live application step before writing. A public page that has no letter field does not need a letter. An optional message can stay unused. A later step you have not seen is unknown, not empty.
+Draft only what the form asks for. `commands/job-screen.md` reads that form first. A public page that has no letter field does not need a letter. An optional message can stay unused. A later step you have not seen is unknown, not empty.
 
 ## Length
 
@@ -8,7 +8,15 @@ About 60–100 words for an optional message. About 80–140 words for an experi
 
 ## Facts
 
-Use `profile/PROFILE.md` and `cv/interview-brief.md`. If a form asks for an example the brief does not contain, mark it **Needs their input** and give the structure, not a fictional story.
+Use `profile/PROFILE.md`, `cv/interview-brief.md`, and `cv/evidence-ledger.md`. If a form asks for an example those files do not contain, mark it **Needs their input** and give the structure, not a fictional story.
+
+When a form asks for collaboration, say who else was involved and what this person personally did.
+
+When it asks for something that did not work, use this shape and a real case:
+
+> On [project], the aim was [goal]. I was responsible for [their part], and I assumed [assumption]. That was wrong because [evidence], which led to [consequence]. I changed [what], and the result was [honest outcome, including what stayed unresolved]. Since then I have [specific change in how they work].
+
+Do not relabel a success as a failure. An ordinary missed assumption is enough when the consequence and the later change are real.
 
 Keep these separate when a form asks for money:
 

@@ -33,6 +33,9 @@ REQUIRED = (
     "constraints.hours.pass",
     "constraints.on_call.fail",
     "compensation.preferred",
+    "contract.prefer",
+    "vehicles.can_use",
+    "markets.slices",
     "writing.tone",
 )
 

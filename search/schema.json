@@ -82,7 +82,10 @@
         "work_model", "hours_text", "oncall_text", "hours_gate",
         "contract", "duration", "pay_published", "pay_gate", "pay_note",
         "stack", "must_haves", "the_work", "fit_why", "fit_gaps", "red_flags",
-        "archetype", "fit_score", "score_breakdown", "confidence", "first_questions"
+        "archetype", "fit_score", "score_breakdown", "confidence", "first_questions",
+        "req_id", "known_company", "live_status", "pay_scope", "pay_verdict",
+        "vehicle_text", "vehicle_fit", "technical_class", "decision",
+        "gaps", "application_questions", "sources"
       ],
       "properties": {
         "company": { "type": "string" },
@@ -125,7 +128,42 @@
           }
         },
         "confidence": { "enum": ["high", "medium", "low"] },
-        "first_questions": { "type": "array", "items": { "type": "string" } }
+        "first_questions": { "type": "array", "items": { "type": "string" } },
+        "req_id": { "type": "string" },
+        "known_company": { "type": "boolean" },
+        "live_status": { "enum": ["live", "unverified", "closed", "unlisted"] },
+        "pay_scope": { "enum": ["local", "location_independent", "other_country", "unpublished"] },
+        "pay_verdict": { "type": "string" },
+        "vehicle_text": { "type": "string" },
+        "vehicle_fit": { "enum": ["matches", "likely", "ask", "unlikely", "no"] },
+        "technical_class": { "enum": ["direct_match", "reasonable_ramp", "specialist_mismatch", "unverified"] },
+        "decision": { "enum": ["Pursue", "Screen first", "Stretch", "Drop"] },
+        "gaps": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["requirement", "status"],
+            "properties": {
+              "requirement": { "type": "string" },
+              "status": { "enum": ["known_absent", "historical", "unverified", "accepted_ramp", "adjacent"] },
+              "impact": { "type": "string" }
+            }
+          }
+        },
+        "application_questions": { "type": "array", "items": { "type": "string" } },
+        "sources": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["url", "excerpt"],
+            "properties": {
+              "url": { "type": "string" },
+              "excerpt": { "type": "string" }
+            }
+          }
+        }
       }
     }
   }

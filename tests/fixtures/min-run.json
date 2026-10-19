@@ -1,0 +1,69 @@
+{
+  "slice": "local",
+  "searched_on": "2026-10-19",
+  "candidates": [
+    {
+      "company": "Example Co",
+      "title": "Backend Engineer",
+      "url": "https://example.com/jobs/1",
+      "found_via": "board",
+      "posted_date": null,
+      "verified_live_on": "2026-10-19",
+      "location_text": "Remote. Country named.",
+      "location_gate": "pass",
+      "location_evidence": "Country named.",
+      "work_model": "remote",
+      "hours_text": "European hours",
+      "oncall_text": "not stated",
+      "hours_gate": "unclear",
+      "contract": "employee",
+      "duration": "open",
+      "pay_published": null,
+      "pay_gate": "unclear",
+      "pay_note": "Unpublished. No estimate.",
+      "pay_scope": "unpublished",
+      "pay_verdict": "Unclear",
+      "vehicle_text": "not stated",
+      "vehicle_fit": "ask",
+      "stack": "Python",
+      "must_haves": "Python",
+      "the_work": "APIs and jobs",
+      "fit_why": "Matches core work.",
+      "fit_gaps": "Pay unknown.",
+      "red_flags": "",
+      "archetype": "product backend",
+      "fit_score": 7.5,
+      "score_breakdown": {"work": 3, "stack": 2, "level": 1, "location": 1, "hours": 0.5, "pay": 0},
+      "confidence": "medium",
+      "first_questions": ["What is the approved band?"],
+      "req_id": "1",
+      "known_company": false,
+      "live_status": "live",
+      "technical_class": "direct_match",
+      "decision": "Screen first",
+      "gaps": [],
+      "application_questions": [],
+      "sources": [{"url": "https://example.com/jobs/1", "excerpt": "Country named."}]
+    }
+  ],
+  "rejected": [
+    {"company": "No Co", "title": "SRE", "url": "https://example.com/jobs/2", "reason": "regular on-call"}
+  ],
+  "channels": [
+    {
+      "name": "Example board",
+      "what": "job board",
+      "rates": "",
+      "location": "",
+      "hours": "",
+      "process": "",
+      "risks": "aggregator",
+      "sources": ["https://example.com"]
+    }
+  ],
+  "coverage": [
+    {"source_or_company": "Example Co", "method": "ATS API", "result": "1 role"}
+  ],
+  "needs_browser_check": [],
+  "notes": ""
+}

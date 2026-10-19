@@ -1,1 +1,1 @@
-company,role,url,status,decision,fit_score,work_model,location_eligibility,contract,compensation,pay_gate,hours_oncall,hours_gate,why_it_fits,gaps,risks,next_step,checked,notes
+url,req_id,company,role,decision,fit_score,status,next_step,notes,location_text,location_gate,work_model,vehicle,vehicle_fit,pay_published,pay_scope,pay_verdict,pay_evidence,hours_oncall,hours_gate,pay_gate,why_it_fits,risk_and_question,technical_class,posted,checked,live_status,confidence,found_via,known_company,slice,run_file

@@ -3,11 +3,15 @@
 profile/profile.yml
 profile/PROFILE.md
 profile/voice.md
+profile/NEXT_SESSION.md
 cv/**
 !cv/README.md
 applications/**
 !applications/README.md
-tracker/roles.csv
+screening/**
+!screening/README.md
+tracker/*.csv
+!tracker/*.example.csv
 tracker/sync-state.md
 search/runs/**
 !search/runs/.gitkeep

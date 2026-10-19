@@ -67,6 +67,23 @@ contract:
   prefer:
   short_term:
 
+vehicles:
+  can_use: []
+  cannot_use: []
+  notes:
+
+markets:
+  slices: []
+  seed_companies: []
+
+linkedin:
+  advertise_search: false
+  headline_locked: true
+
+cv:
+  current:
+  text:
+
 writing:
   tone:
   languages: []

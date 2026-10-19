@@ -40,6 +40,18 @@ State each pay floor with currency, period, and basis. Do not convert floors int
 
 Use the weights in `profile.yml`. A role with any `fail` gate is rejected or listed under rejected, even if the weighted score looks high. Missing pay scores as unknown, not as zero and not as an estimate.
 
+## Vehicles
+
+Ways they can be engaged, ways they cannot, and what they need in writing for leave, notice, payment, and the client. Do not restate this as a tax model.
+
+## Markets
+
+The search slices they chose, and companies they asked to watch.
+
+## Public CV
+
+What must never appear. The short card is `cv/interview-brief.md`. The claim boundaries are `cv/evidence-ledger.md`.
+
 ## Writing
 
 Tone, language, and the CV rules they asked for.
