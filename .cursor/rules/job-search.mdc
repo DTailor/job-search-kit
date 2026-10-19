@@ -1,0 +1,13 @@
+---
+description: Set up this job-search kit from the person's requirements before searching, drafting, or tracking.
+alwaysApply: true
+---
+
+# Job search workspace
+
+This repository is a generic kit. The person's requirements belong in `profile/profile.yml`, which is gitignored.
+
+- If `profile/profile.yml` is missing or `status` is not `ready`, follow `SETUP.md` before any search, draft, or tracker edit. Interview them. Do not adopt `profile/profile.example.yml` as their profile.
+- When the profile is ready, follow `AGENTS.md` and the matching file in `commands/`.
+- Do not apply, send, upload a CV, start an assessment, or change a public profile unless the current message explicitly asks for that act.
+- Never put their name, email, or other personal details into a job query or an external search service.

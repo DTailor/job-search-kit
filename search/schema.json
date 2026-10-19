@@ -1,0 +1,132 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.com/job-search-kit/search-run.schema.json",
+  "title": "Job search run",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["slice", "searched_on", "candidates", "rejected", "coverage"],
+  "properties": {
+    "slice": { "type": "string", "minLength": 1 },
+    "searched_on": { "type": "string", "format": "date" },
+    "candidates": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/role" }
+    },
+    "rejected": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["company", "title", "url", "reason"],
+        "properties": {
+          "company": { "type": "string" },
+          "title": { "type": "string" },
+          "url": { "type": "string" },
+          "reason": { "type": "string" }
+        }
+      }
+    },
+    "channels": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["name", "what", "risks", "sources"],
+        "properties": {
+          "name": { "type": "string" },
+          "what": { "type": "string" },
+          "rates": { "type": "string" },
+          "location": { "type": "string" },
+          "hours": { "type": "string" },
+          "process": { "type": "string" },
+          "risks": { "type": "string" },
+          "sources": { "type": "array", "items": { "type": "string" } }
+        }
+      }
+    },
+    "coverage": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["source_or_company", "method", "result"],
+        "properties": {
+          "source_or_company": { "type": "string" },
+          "method": { "type": "string" },
+          "result": { "type": "string" }
+        }
+      }
+    },
+    "needs_browser_check": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["url", "why"],
+        "properties": {
+          "url": { "type": "string" },
+          "why": { "type": "string" }
+        }
+      }
+    },
+    "notes": { "type": "string" }
+  },
+  "$defs": {
+    "gate": { "enum": ["pass", "unclear", "fail"] },
+    "role": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "company", "title", "url", "found_via", "verified_live_on",
+        "location_text", "location_gate", "location_evidence",
+        "work_model", "hours_text", "oncall_text", "hours_gate",
+        "contract", "duration", "pay_published", "pay_gate", "pay_note",
+        "stack", "must_haves", "the_work", "fit_why", "fit_gaps", "red_flags",
+        "archetype", "fit_score", "score_breakdown", "confidence", "first_questions"
+      ],
+      "properties": {
+        "company": { "type": "string" },
+        "title": { "type": "string" },
+        "url": { "type": "string" },
+        "found_via": { "type": "string" },
+        "posted_date": { "type": ["string", "null"] },
+        "verified_live_on": { "type": ["string", "null"] },
+        "location_text": { "type": "string" },
+        "location_gate": { "$ref": "#/$defs/gate" },
+        "location_evidence": { "type": "string" },
+        "work_model": { "enum": ["remote", "hybrid", "onsite", "unclear"] },
+        "hours_text": { "type": "string" },
+        "oncall_text": { "type": "string" },
+        "hours_gate": { "$ref": "#/$defs/gate" },
+        "contract": { "type": "string" },
+        "duration": { "type": "string" },
+        "pay_published": { "type": ["string", "null"] },
+        "pay_gate": { "$ref": "#/$defs/gate" },
+        "pay_note": { "type": "string" },
+        "stack": { "type": "string" },
+        "must_haves": { "type": "string" },
+        "the_work": { "type": "string" },
+        "fit_why": { "type": "string" },
+        "fit_gaps": { "type": "string" },
+        "red_flags": { "type": "string" },
+        "archetype": { "type": "string" },
+        "fit_score": { "type": "number", "minimum": 0, "maximum": 10 },
+        "score_breakdown": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["work", "stack", "level", "location", "hours", "pay"],
+          "properties": {
+            "work": { "type": "number" },
+            "stack": { "type": "number" },
+            "level": { "type": "number" },
+            "location": { "type": "number" },
+            "hours": { "type": "number" },
+            "pay": { "type": "number" }
+          }
+        },
+        "confidence": { "enum": ["high", "medium", "low"] },
+        "first_questions": { "type": "array", "items": { "type": "string" } }
+      }
+    }
+  }
+}

@@ -1,0 +1,21 @@
+# Personal search data. The template stays shareable.
+# In a private clone you can stop ignoring paths you want to version.
+profile/profile.yml
+profile/PROFILE.md
+profile/voice.md
+cv/**
+!cv/README.md
+applications/**
+!applications/README.md
+tracker/roles.csv
+tracker/sync-state.md
+search/runs/**
+!search/runs/.gitkeep
+
+.DS_Store
+.env
+.env.*
+*.pem
+credentials.json
+token.json
+*-credentials.json

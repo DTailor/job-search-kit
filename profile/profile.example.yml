@@ -1,0 +1,99 @@
+# Schema for profile/profile.yml. Setup fills this in. Not a real candidate.
+status: template
+setup_date:
+freshness_days: 14
+
+person:
+  name:
+  address_as:
+  location:
+  email:
+  public_links: []
+
+target:
+  headline:
+  level:
+  titles: []
+  summary:
+
+evidence:
+  core: []
+  adjacent: []
+  do_not_claim: []
+  domains: []
+  stories: []
+
+fit:
+  ranked: []
+  reject: []
+  avoid_companies: []
+  stretch_ok: []
+
+constraints:
+  work_model: []
+  hybrid_locations: []
+  relocation: "no"
+  eligibility:
+    pass:
+    not_enough:
+    fail:
+  hours:
+    pass:
+    fail:
+  on_call:
+    pass:
+    unclear:
+    fail:
+  start:
+  notice:
+
+compensation:
+  preferred:
+  floors:
+    - engagement: employee
+      amount:
+      currency:
+      period:
+      basis:
+    - engagement: contractor
+      amount:
+      currency:
+      period: hour
+      basis: invoice
+  fx_note:
+  separate: "Keep invoice rate, employee gross, and take-home net separate."
+
+contract:
+  prefer:
+  short_term:
+
+writing:
+  tone:
+  languages: []
+  cv: []
+  never: []
+
+follow_up:
+  quiet_days: 10
+  propose_close_days: 60
+
+integrations:
+  gmail:
+    enabled: false
+    account:
+  spreadsheet:
+    enabled: false
+    url:
+    is_source_of_truth: false
+  linkedin:
+    enabled: false
+
+scoring:
+  work: 4
+  stack: 2
+  level: 1
+  location: 1
+  hours: 1
+  pay: 1
+  pursue_at: 8
+  screen_at: 6
