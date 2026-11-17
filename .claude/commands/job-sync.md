@@ -1,5 +1,9 @@
 ---
-description: Read configured inbox for replies and propose tracker updates
-argument-hint: [company | since YYYY-MM-DD]
+description: Legacy alias for /job-status
+argument-hint: [since YYYY-MM-DD] [company]
 ---
-Follow `commands/job-sync.md`. Argument: $ARGUMENTS
+`job-sync` is the legacy alias for `job-status`.
+
+Read and follow this project's [shared job-status skill](../../.agents/skills/job-status/SKILL.md). Resolve that path relative to this command file. The skill points to the maintained playbook and project rules.
+
+User arguments: $ARGUMENTS

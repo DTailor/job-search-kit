@@ -1,71 +1,54 @@
-# Job search kit
+# Job-hunt kit
 
-A job-search workspace an agent can run for anyone. The template has the method and no personal data. A setup prompt interviews the next person and writes their profile, gates, and preferences into this folder.
+A reusable workspace for running a job search with an AI coding agent (Claude Code, Codex or any agent that reads `AGENTS.md` and Agent Skills). It provides:
 
-Give someone this repository and this prompt:
+- six workflows as playbooks: `job-status`, `job-plan`, `job-scout`, `job-followup`, `job-interview`, `job-archive`, plus a scheduled `job-refresh` and the `job-setup` onboarding interview;
+- a Google Sheets tracker with five tabs (All roles, Application queue, Research audit, Active pipeline, Shortlist) and a local dashboard;
+- tools that prepare, verify and finalize tracker publications and sweep candidate portals;
+- rules that keep the agent within the person's approvals, evidence standards and privacy.
 
-```text
-Set up this job search for me. Follow SETUP.md. Interview me, draft my profile, and wait for my confirmation. Do not search for jobs until I confirm.
-```
+The kit contains no personal data. Each person's values live in their own workspace (an "instance"): `workspace.json` and the `profile/` folder.
 
-They can paste that on the first message after opening the repo. If `profile/profile.yml` is missing, the agent is supposed to run setup before it searches, drafts, or edits the tracker.
+## Quickstart for a new person
 
-## What you get after setup
-
-| Need | Where |
-|---|---|
-| Requirements, gates, and positioning | `profile/profile.yml` and `profile/PROFILE.md` |
-| What the agent may do | `AGENTS.md` |
-| A verified role search, then a recheck when it goes stale | `commands/job-search.md`, `commands/job-recheck.md` |
-| Roles, coverage, companies, channels, inbox | `tracker/` via `tools/tracker.py` |
-| Company and intermediary checks | `commands/job-diligence.md` |
-| Public form questions, before anyone applies | `commands/job-screen.md` |
-| What was applied and what was sent | `applications/<company>_<role>/` |
-| Follow-ups and interview prep | `commands/job-followup.md`, `commands/job-interview.md` |
-| CV review against private evidence | `commands/job-cv.md` and `cv/` |
-
-The CSV tracker is the status source. A spreadsheet or Gmail connection is optional and stays off until setup turns it on.
-
-## Commands
-
-| Say this | Procedure |
-|---|---|
-| Set this up | `SETUP.md` and `commands/setup.md` |
-| Find roles | `commands/job-search.md` |
-| Recheck what is still live | `commands/job-recheck.md` |
-| Check this company | `commands/job-diligence.md` |
-| Read the form | `commands/job-screen.md` |
-| Review my CV | `commands/job-cv.md` |
-| I applied to this | `commands/job-archive.md` |
-| Check for replies | `commands/job-sync.md` |
-| Draft follow-ups | `commands/job-followup.md` |
-| Prep me for this interview | `commands/job-interview.md` |
-
-The same procedures are available as Claude slash commands under `.claude/commands/`.
-
-## What stays private
-
-Setup writes career details, and later searches add employers, pay, and messages. Those paths are listed in `.gitignore`:
-
-- `profile/profile.yml`, `profile/PROFILE.md`, `profile/voice.md`, `profile/NEXT_SESSION.md`
-- `cv/` except this kit's `cv/README.md`
-- `applications/` except `applications/README.md`
-- `screening/` except `screening/README.md`
-- `tracker/*.csv` except the header-only examples, and `tracker/sync-state.md`
-- `search/runs/`
-
-Check `git status` before you push a fork. A filled-in profile does not belong in a public repository.
+1. Copy this folder to a private location (do not push it to a public repository).
+2. Create an empty Google Sheet for the tracker and keep its ID handy.
+3. Open Claude Code or Codex in the folder and run `/job-setup` (Codex: `$job-setup`), or ask the agent to follow [SETUP.md](SETUP.md).
+4. Answer the five short interview rounds and confirm the summary. The agent writes `workspace.json`, `profile/PROFILE.md`, `profile/PREFERENCES.md`, `profile/SOURCES.md` and `AGENTS.md`, runs `python3 tools/new_workspace.py`, and (with your approval) creates the tracker tabs through the Sheets connector.
+5. First runs: `/job-scout wide`, then `/job-status` and `/job-plan` as replies come in.
 
 ## Layout
 
-- `SETUP.md`: the prompt.
-- `AGENTS.md`: operating rules once a profile exists.
-- `profile/`: example and template. The real profile is created locally.
-- `search/`: how a research pass verifies a role, and the JSON shape it must write.
-- `commands/`: one procedure per file. Claude slash commands point here; they do not carry a second copy.
-- `templates/`: posting, application, prep, interview brief, evidence ledger, form screen, and next-session prompt.
-- `writing/GUIDE.md`: how to draft application answers.
-- `tools/check_setup.py`: reports a profile that is still incomplete.
-- `tools/tracker.py`: the only writer for tracker CSVs. `tests/test_kit.py` checks the profile parser, the search schema, the CSV headers, and that an in-progress application is not overwritten.
+```text
+AGENTS.template.md      generic agent rules; SETUP fills it into AGENTS.md
+SETUP.md                onboarding interview and generation steps
+playbooks/              workflow instructions (single source)
+.agents/skills/         thin Agent Skill entry points (job-*/SKILL.md)
+.claude/commands/       thin Claude Code commands (incl. job-sync alias)
+templates/
+  workspace.example.json
+  profile/              PROFILE.md, PREFERENCES.md, SOURCES.md templates
+tools/                  workspace.py, tracker_publish.py, status_portals.py, new_workspace.py, kit_sync.py, ...
+dashboard/              local dashboard build
+docs/architecture.md    data flow, publication pattern, kit vs instance ownership
+```
 
-The order after setup is: search a slice, diligence on the companies worth time, read the form, then archive only after the person has applied. Recheck on the freshness window. Sync, follow up, and interview prep follow from the tracker.
+An instance adds: `workspace.json`, `AGENTS.md`, `profile/`, and the data folders named in `workspace.json` `paths.*` (pool, status snapshots, plans, scout runs, application folders, company dossiers, automation state).
+
+## Precedence
+
+The person's newest dated instruction (in `profile/PREFERENCES.md`) wins over older entries and over playbook defaults. Playbooks never hard-code a person; they refer to `workspace.json` keys and `profile/` files.
+
+## Upgrading an instance
+
+Kit-managed files (playbooks, skills, commands, tools, dashboard, templates, `AGENTS.template.md`, `SETUP.md`, this README and `docs/`) are copied into an instance with:
+
+```sh
+python3 tools/kit_sync.py PATH            # dry run: shows what would change
+python3 tools/kit_sync.py PATH --apply    # copies kit-managed files
+python3 tools/cleanup_audit.py PATH       # clutter report; --apply cleans reversibly
+```
+
+Instance-owned files (`workspace.json`, `AGENTS.md`, `profile/`, data folders) are never overwritten. If an instance needs a different rule, put it in `profile/PREFERENCES.md`, not in a playbook; a local playbook edit would be replaced on the next sync. Review the dry run before applying, and check `AGENTS.template.md` changes by hand against the instance's `AGENTS.md`.
+
+See [docs/architecture.md](docs/architecture.md) for how data moves through the workspace.

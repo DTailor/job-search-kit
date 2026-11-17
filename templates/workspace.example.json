@@ -1,0 +1,95 @@
+{
+  "schema_version": 1,
+  "person": {
+    "name": "Alex Example",
+    "short_name": "Alex",
+    "email": "alex@example.com",
+    "timezone": "Europe/Berlin",
+    "location": "Berlin, Germany",
+    "languages": [
+      "English"
+    ],
+    "pronouns": null
+  },
+  "accounts": {
+    "email_connector": "gmail",
+    "calendar_connector": "google-calendar",
+    "browser": {
+      "tool": "safari-act",
+      "path": null,
+      "notes": "Set to the Safari Act CLI path, or null to use only connectors/public HTTP."
+    }
+  },
+  "tracker": {
+    "kind": "google-sheets",
+    "spreadsheet_id": "REPLACE_WITH_SPREADSHEET_ID",
+    "header_row": 4,
+    "tabs": {
+      "all_roles": {
+        "title": "All roles",
+        "sheet_id": 0,
+        "header_row": 1
+      },
+      "queue": {
+        "title": "Application queue",
+        "sheet_id": 0
+      },
+      "audit": {
+        "title": "Research audit",
+        "sheet_id": 0
+      },
+      "pipeline": {
+        "title": "Active pipeline",
+        "sheet_id": 0
+      },
+      "shortlist": {
+        "title": "Shortlist",
+        "sheet_id": 0
+      }
+    }
+  },
+  "paths": {
+    "data": "data",
+    "pool": "data/current-pool.json",
+    "automation": "data/automation",
+    "status": "data/status",
+    "plans": "data/plans",
+    "scouts": "data/scouts",
+    "applications": "data/applications",
+    "companies": "data/companies",
+    "profile": "profile",
+    "dashboard": "dashboard",
+    "tracker_base": "data/automation/tracker-base.json",
+    "portal_targets": "data/status/portal-targets.json"
+  },
+  "search": {
+    "role_titles": [
+      "Senior Backend Engineer",
+      "Senior Python Developer"
+    ],
+    "work_model": "remote",
+    "contract_preference": "Describe the preferred contract forms in profile/PREFERENCES.md",
+    "currency": "EUR"
+  },
+  "refresh": {
+    "enabled": false,
+    "weekday_time": "09:00",
+    "runner": null
+  },
+  "gates": {
+    "all_roles_columns": [
+      "location",
+      "hours",
+      "pay"
+    ],
+    "dashboard": {
+      "Location": "location",
+      "Pay": "pay",
+      "Hours": "hours",
+      "Term": "term"
+    }
+  },
+  "checks": {
+    "never_queue_companies": []
+  }
+}
