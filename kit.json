@@ -1,0 +1,71 @@
+{
+  "kit_schema": 1,
+  "description": "Files the kit owns. kit_sync.py copies them into a workspace; everything else (workspace.json, profile/, data paths, dashboard data) belongs to the person.",
+  "managed": [
+    {
+      "src": "tools",
+      "dest": "tools",
+      "include": [
+        "*.py"
+      ]
+    },
+    {
+      "src": "playbooks",
+      "dest": "playbooks"
+    },
+    {
+      "src": ".agents",
+      "dest": ".agents"
+    },
+    {
+      "src": ".claude",
+      "dest": ".claude"
+    },
+    {
+      "src": "dashboard",
+      "dest_path": "dashboard",
+      "exclude": [
+        "data/*"
+      ]
+    },
+    {
+      "src": "docs",
+      "dest": "docs"
+    },
+    {
+      "src": "templates",
+      "dest": "templates"
+    },
+    {
+      "src": "SETUP.md",
+      "dest": "SETUP.md"
+    },
+    {
+      "src": "AGENTS.template.md",
+      "dest": "AGENTS.template.md"
+    }
+  ],
+  "ignore": [
+    "__pycache__",
+    ".pytest_cache",
+    ".DS_Store",
+    "*.pyc",
+    "node_modules"
+  ],
+  "never_touch": [
+    "workspace.json",
+    "profile"
+  ],
+  "entry_points": [
+    "tools/ats_census.py",
+    "dashboard/build.py",
+    "dashboard/qa-static.mjs",
+    "tools/check_job_views.py",
+    "tools/cleanup_audit.py",
+    "tools/job_refresh.py",
+    "tools/kit_sync.py",
+    "tools/new_workspace.py",
+    "tools/status_portals.py",
+    "tools/tracker_publish.py"
+  ]
+}

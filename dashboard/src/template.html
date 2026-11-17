@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <meta name="description" content="{{DESCRIPTION}}">
+  <title>{{TITLE}}</title>
+  <style>/*__STYLES__*/</style>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to workspace</a>
+  <div class="app-shell">
+    <aside class="sidebar" id="sidebar" aria-label="Workspace navigation">
+      <button class="icon-button sidebar-close" data-action="menu" aria-label="Close navigation">×</button>
+      <a href="#overview" class="brand" data-view="overview" aria-label="Waypoint home"><span class="brand-mark">w<span>↗</span></span><span>waypoint<span class="brand-dot">.</span></span></a>
+      <div class="workspace-label">PERSONAL WORKSPACE</div>
+      <nav id="nav"></nav>
+      <div class="sidebar-bottom">
+        <div class="north-star"><span class="tiny-label">YOUR NORTH STAR</span><strong>Good work.<br>On your terms.</strong><p>{{NORTH_STAR}}</p><button class="sidebar-link" data-action="preferences">View search criteria <span>↗</span></button></div>
+        <div class="profile"><span class="avatar">{{AVATAR}}</span><span><strong>{{PERSON_NAME}}</strong><small>Private workspace</small></span><span class="profile-dot" aria-label="Local prototype"></span></div>
+      </div>
+    </aside>
+    <div class="workspace">
+      <header class="topbar">
+        <div class="breadcrumb"><button class="icon-button mobile-menu" data-action="menu" aria-label="Toggle navigation">☰</button><span class="breadcrumb-home">Workspace</span><span class="crumb-slash">/</span><strong id="crumb">Overview</strong></div>
+        <div class="topbar-right"><label class="global-search"><span data-icon="search"></span><input type="search" id="global-search" aria-label="Search opportunities" placeholder="Find an opportunity…"><kbd>/</kbd></label><button class="snapshot-pill" data-view="sources"><span></span>{{SNAPSHOT_PILL}}<span data-icon="chevronDown"></span></button></div>
+      </header>
+      <main id="main" tabindex="-1"></main>
+      <footer class="app-footer"><span>Waypoint · Product prototype</span><span>{{FOOTER_EVIDENCE}}</span><button class="text-button" data-view="sources">Sources & coverage <span>↗</span></button></footer>
+    </div>
+  </div>
+  <dialog id="detail-dialog" class="detail-dialog" aria-labelledby="detail-title"></dialog>
+  <dialog id="compare-dialog" class="compare-dialog" aria-labelledby="compare-title"></dialog>
+  <dialog id="preferences-dialog" class="preferences-dialog" aria-labelledby="preferences-title"></dialog>
+  <div id="compare-tray" class="compare-tray" hidden></div>
+  <div id="toast" role="status" aria-live="polite" class="toast"></div>
+  <noscript><div class="no-script">This interactive workspace needs JavaScript. Your source files and Google tracker are unchanged.</div></noscript>
+  <script>/*__DATA__*/</script>
+  <script>/*__APP__*/</script>
+</body>
+</html>
