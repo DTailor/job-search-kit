@@ -25,9 +25,20 @@ Spec (JSON):
   "new_jobs": [{"job": {<full pool record without pool_id; original_url required>},
                 "presentation": {"company","role","work","fit","watch","question","location","pay"},
                 "decision_cell": "Screen first", "tech_fit": "7.5", "company_summary": "dashboard firm summary (default: background.main_risk)", "stage_evidence": "...", "background_cell": "..."}],
+  "shortlist_status": {"pool-04": "Interviewing"},
+  "presentation": {"pool-92": {"watch": "...", "question": "..."}},
   "headlines": {"pipeline": ["row 2", "row 3"], "queue": ["row 2", "row 3"], "shortlist": ["row 2", "row 3"]},
   "snapshot_note": "dashboard capture note"
 }
+Shortlist rows that match a changed pool job (exact company + original title) follow the pool:
+R = next_action; Q (Status) = the explicit shortlist_status if given (one of SHORTLIST_STATUS),
+else Rejected/Withdrawn from the bucket, else Applied when the row still says Not contacted
+(Interviewing/Offer/On hold are never downgraded); T, when it holds the derived
+"<bucket>; audit only; revision <rev>" form, is rewritten with the current bucket.
+A pool entry that replaces "background" also rewrites that job's All roles W company line and
+its dashboard firm summary; "presentation" updates an existing job's dashboard brief fields.
+Closed candidacies in Active pipeline B start with "Rejected <date>" or
+"Closed by employer <date>" (for example a filled role); the dashboard groups both as closed.
 Optional live_readback points to a fresh five-tab readback with a sheets array.
 After reviewing drift, use it to compute writes against actual live cells while
 preserving the finalized local base as the intended starting state. This repairs
@@ -58,7 +69,27 @@ T = {k: ws.tab_title(k) for k in ws.TAB_KEYS}
 H = {k: ws.header_row(k) for k in ws.TAB_KEYS}
 WIDTH = {T['all_roles']: 23, T['queue']: 13, T['audit']: 13, T['pipeline']: 9, T['shortlist']: 20}
 COL = {c: i for i, c in enumerate('ABCDEFGHIJKLMNOPQRSTUVW')}
+SHORTLIST_STATUS = ('Not contacted', 'Asked screening Qs', 'Applied', 'Interviewing', 'Offer', 'On hold', 'Rejected', 'Withdrawn')
+BUCKET_STATUS = {'Rejected': 'Rejected', 'Withdrawn': 'Withdrawn'}
+READINESS = re.compile(r'^.+; audit only; revision [0-9a-f]{16}$')
 read = lambda p: json.loads(Path(p).read_text())
+
+
+def background_cell(bg):
+    """All roles W: the dated company-background line derived from a pool record's background."""
+    return f"{bg['checked_at']} — {bg['judgement']}. {bg['main_risk']} {bg['path']}"
+
+
+def shortlist_sync(row, job, rev, status=None):
+    """Bring a Shortlist row that mirrors a pool job in line with it (R, Q, derived T)."""
+    row[17] = job['next_action']
+    status = status or BUCKET_STATUS.get(job['bucket'])
+    if status:
+        row[16] = status
+    elif job['bucket'] == 'Applied' and str(row[16]).strip() in ('', 'Not contacted'):
+        row[16] = 'Applied'
+    if READINESS.match(str(row[19])):
+        row[19] = f"{job['bucket']}; audit only; revision {rev}"
 
 
 def dump(p, v):
@@ -102,6 +133,10 @@ def plan(spec_path):
     by = {j['pool_id']: j for j in state['jobs']}
     for pid, fields in spec.get('pool', {}).items():
         by[pid].update(fields)
+    statuses = spec.get('shortlist_status', {})
+    for pid, s in statuses.items():
+        assert pid in by, f'shortlist_status: unknown pool id {pid}'
+        assert s in SHORTLIST_STATUS, f'shortlist_status {pid}: {s!r} not one of {SHORTLIST_STATUS}'
     AR = T['all_roles']; added = []
     next_id = max(int(j['pool_id'].split('-')[1]) for j in state['jobs']) + 1 if state['jobs'] else 1
     for n in spec.get('new_jobs', []):
@@ -116,7 +151,7 @@ def plan(spec_path):
                          job['location_text'], job['work_model'], job['contract_text'], job['pay_published'], job['hours_oncall'], job['why_fits'],
                          job['main_risk_and_first_question'], job['checked_at'], job['application_state'], '', job['next_action'], '',
                          n.get('stage_evidence', job['url']), job['original_url'],
-                         n.get('background_cell', f"{bg['checked_at']} — {bg['judgement']}. {bg['main_risk']} {bg['path']}")])
+                         n.get('background_cell', background_cell(bg))])
         state['jobs'].append(job); by[job['pool_id']] = job; added.append(dict(pool_id=job['pool_id'], presentation=n['presentation'], company_id=Path(bg['path']).stem,
                           company_summary=n.get('company_summary', bg['main_risk'])))
     state.update(as_of=spec['date'], source_snapshot=spec['outdir'], revision=revision(state['jobs']))
@@ -128,6 +163,8 @@ def plan(spec_path):
         if job['pool_id'] in changed:
             row[16:20] = [job['application_state'], f"{job['bucket']}; original {job['verification_state']}",
                           job['next_action'], f"{spec['date']}; publication {rev}"]
+            if 'background' in spec.get('pool', {}).get(job['pool_id'], {}) and len(row) > 22:
+                row[22] = background_cell(job['background'])
         else:
             row[19] = str(row[19]).replace(old, rev)
     heads = spec.get('headlines', {})
@@ -155,8 +192,8 @@ def plan(spec_path):
         if len(row) >= 20:
             row[19] = str(row[19]).replace(old, rev)
             match = next((j for j in state['jobs'] if row[3:5] == [j['company'], j['original_title']]), None)
-            if match and match['pool_id'] in changed:
-                row[17] = match['next_action']
+            if match and (match['pool_id'] in changed or match['pool_id'] in statuses):
+                shortlist_sync(row, match, rev, statuses.get(match['pool_id']))
     reqs = [{'findReplace': {'find': old, 'replacement': rev, 'sheetId': ids[n], 'matchCase': True}} for n in (AR, SL)] if old != rev else []
     expect_fr = [sum(old in str(c) for r in orig[n] for c in r) for n in (AR, SL)] if old != rev else [0, 0]  # Sheets reports cells changed, not rows
     for at in inserts:
@@ -323,6 +360,13 @@ def finalize(outdir):
     for a in added:
         pres['jobs'][a['pool_id']] = a['presentation']
         pres['companies'].setdefault(a['company_id'], a['company_summary'])
+    for pid, fields in spec.get('presentation', {}).items():
+        assert pid in pres['jobs'], f'presentation: no dashboard brief for {pid}'
+        pres['jobs'][pid].update(fields)
+    for pid, fields in spec.get('pool', {}).items():
+        if 'background' in fields:
+            bg = by[pid]['background']
+            pres['companies'][Path(bg['path']).stem] = bg['main_risk']
     # dossiers kept for firms without a pool record (held or rejected leads) still need a dashboard summary
     index = ws.path('companies') / 'index.json' if 'companies' in ws.load()['paths'] else None
     if index and index.is_file():

@@ -205,6 +205,11 @@ def company_key(value):
     return re.sub(r'\s*\([^)]*\)', '', value).split(' / ')[0].strip().casefold().rstrip('.')
 
 
+# An Active pipeline Progress cell that starts "Rejected <date>" or "Closed by employer <date>"
+# (for example a filled role) marks a candidacy the employer ended; both count as closed.
+EMPLOYER_CLOSED = re.compile(r'^(Rejected|Closed by employer)\b')
+
+
 def process_row(item):
     """Resolve the pipeline row by evidence URL, with unique company fallback.
 
@@ -238,9 +243,10 @@ for r in R:
                  notes=row[6] + ' Source verification: ' + row[7])
         if r['group'] == 'current' and row[3]:
             r['owner'] = SELF if row[3] == SELF else 'Them'
-        if row[1].startswith('Rejected '):
+        closure = EMPLOYER_CLOSED.match(str(row[1]))
+        if closure:
             event = re.search(r'\b\d{4}-\d{2}-\d{2}\b', row[1])
-            r.update(group='closed', stage='Rejected', owner='None', last=event.group(0) if event else r['last'], questions=[])
+            r.update(group='closed', stage=closure.group(1), owner='None', last=event.group(0) if event else r['last'], questions=[])
             r['timeline'].append([r['last'], row[1]])
         for url in sorted(urls(row[8])):
             if url not in {source.rstrip('.,/') for _, source in r['sources']}:
@@ -373,8 +379,8 @@ DATA = sanitize(DATA)
 current_count = re.match(r'(\d+) current processes', str(pipeline[2][0])) if len(pipeline) > 2 and pipeline[2] else None
 assert current_count is None or len([r for r in R if r['group'] == 'current']) == int(current_count.group(1)), 'Current process count differs from the working tracker'
 assert len([r for r in R if r['group'] == 'target']) == POOL_COUNTS['priority']
-closed_count = sum(bool(row and len(row) > 1 and (str(row[1]).startswith('Rejected ') or (str(row[1]).startswith('Closed ') and 'employer rejection' in row[1]))) for row in pipeline[PIPE_HEAD:])
-assert len([r for r in R if r['group'] == 'closed']) == closed_count, 'Rejection count differs from the working tracker'
+closed_count = sum(bool(row and len(row) > 1 and (EMPLOYER_CLOSED.match(str(row[1])) or (str(row[1]).startswith('Closed ') and 'employer rejection' in row[1]))) for row in pipeline[PIPE_HEAD:])
+assert len([r for r in R if r['group'] == 'closed']) == closed_count, 'Employer-closed (rejected or closed by employer) count differs from the working tracker'
 assert len(companies) == len(company_index)
 assert len(appdocs) == (len(list(APPLICATIONS.glob('*/application.md'))) if APPLICATIONS.is_dir() else 0)
 assert {r['poolId'] for r in R if r.get('poolId')} == {j['pool_id'] for j in QUEUE}

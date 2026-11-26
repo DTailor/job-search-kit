@@ -736,14 +736,27 @@ def req_section(desc, n=900):
     return desc[best.end():best.end() + n].strip() if best else ""
 
 
+# Query parameters that identify a posting (e.g. careers.example.com/?gh_jid=123). Every other
+# parameter (utm_*, source, ...) is dropped so tracking variants of one URL still match.
+JOB_QUERY_KEYS = re.compile(r"(?i)^(gh_jid|jid|job_?id|jobid|id|posting_?id|position_?id|vacancy_?id|req(uisition)?_?id)$")
+
+
+def norm_url(u):
+    """Canonical form for exact-requisition dedup: no fragment or tracking query, but a job-id query
+    parameter is kept, so two postings on one careers page with only ?gh_jid= differing stay distinct."""
+    base, _, query = u.split("#")[0].partition("?")
+    keep = sorted(kv.rstrip("/.,;") for kv in query.split("&") if "=" in kv and JOB_QUERY_KEYS.match(kv.split("=", 1)[0]))
+    return (base.rstrip("/.,;") + ("?" + "&".join(keep) if keep else "")).lower()
+
+
 def cmd_triage(R, args):
     dedup = set()
     ids = set()
     for f in args.dedup or []:
         for l in Path(f).read_text(errors="replace").splitlines():
             for u in re.findall(r"https?://[^\s|)\]>\"']+", l):
-                u = u.split("?")[0].split("#")[0].rstrip("/.,;")
-                dedup.add(u.lower())
+                u = norm_url(u)
+                dedup.add(u)
                 for m in re.findall(r"[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}|(?<![0-9])[0-9]{6,12}(?![0-9])", u):
                     ids.add(m)
     excl = []
@@ -831,7 +844,7 @@ def cmd_triage(R, args):
                 flags.append(f"frontend:{nfe}")
             if sentences(desc, ONSITE, 1) and scope != "home_listed":
                 flags.append("onsite/hybrid-wording")
-            u = (j.get("url") or "").split("?")[0].rstrip("/").lower()
+            u = norm_url(j.get("url") or "")
             jid = str(j.get("id") or "")
             co = re.sub(r"[^a-z0-9]", "", j["slug"].lower())
             if u in dedup or (len(jid) >= 6 and jid in ids):

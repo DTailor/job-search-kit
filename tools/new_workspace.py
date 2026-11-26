@@ -188,7 +188,7 @@ def scaffold(target, kit, template):
             sheetReadAt=now, sheetUrl=f"https://docs.google.com/spreadsheets/d/{cfg['tracker']['spreadsheet_id']}/edit",
             opportunities=[], companies=[], research=[], reconciliation=[], poolCounts=counts,
             publicationRevision=rev, poolAudit=[], sourceTabs=[dict(name=s['sheet'], values=s['values']) for s in sheets],
-            statusDocument='', planDocument='', updates=[], applicationDocs=[], constraints=[], tasks=[], coverage=[], sources=[]),
+            updates=[], applicationDocs=[], constraints=[], tasks=[], coverage=[], sources=[]),
     }
     for path, value in files.items():
         if write_new(path, value):

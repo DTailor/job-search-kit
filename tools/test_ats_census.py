@@ -56,3 +56,12 @@ def test_contract_wording_ignores_b2b_saas():
     assert not a.B2B.search("We are a high-performing B2B SaaS company with contractors as customers.")
     assert a.B2B.search("Compensation: 9,600 - 12,000 USD per month (B2B)")
     assert a.B2B.search("You will be engaged as an independent contractor.")
+
+
+def test_norm_url_keeps_job_id_query():
+    # Job-id query parameters distinguish postings on a shared careers page.
+    a1 = a.norm_url("https://careers.example.com/?gh_jid=4965522101")
+    a2 = a.norm_url("https://careers.example.com/?gh_jid=4950630101&utm_source=x")
+    assert a1 != a2 and a2 == "https://careers.example.com?gh_jid=4950630101"
+    assert a.norm_url("https://jobs.ashbyhq.com/Acme/1a11/?utm_source=li#apply") == "https://jobs.ashbyhq.com/acme/1a11"
+    assert a.norm_url("https://www.example.com/careers/?gh_jid=4665861006.") == "https://www.example.com/careers?gh_jid=4665861006"

@@ -56,5 +56,63 @@ class LiveReadbackPlanning(unittest.TestCase):
                     publish.plan(spec)
 
 
+class BackgroundRefresh(unittest.TestCase):
+    def test_pool_background_change_rewrites_all_roles_company_line(self):
+        state = publish.load_current()
+        base_path = publish.base_path()
+        job = state['jobs'][0]
+        bg = dict(job['background'], checked_at='2026-11-26', judgement='Fixture judgement', main_risk='Fixture risk.')
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            spec = root / 'spec.json'
+            spec.write_text(json.dumps(dict(label='fixture', date='2026-11-26', outdir='plan',
+                                            pool={job['pool_id']: {'background': bg}})))
+            with patch.object(publish, 'ROOT', root), patch.object(publish, 'base_path', return_value=base_path), patch.object(publish, 'load_current', return_value=copy.deepcopy(state)):
+                publish.plan(spec)
+            planned = publish.read(root / 'plan/planned-values.json')[publish.T['all_roles']]
+            row = next(r for r in planned if len(r) > 22 and r[21] == job['original_url'])
+            self.assertEqual(row[22], publish.background_cell(bg))
+            self.assertTrue(row[22].startswith('2026-11-26 — Fixture judgement. Fixture risk.'))
+
+
+class ShortlistSync(unittest.TestCase):
+    REV = '0123456789abcdef'
+
+    def row(self, status, readiness):
+        row = [''] * 20
+        row[16], row[17], row[19] = status, 'old next step', readiness
+        return row
+
+    def test_rejected_bucket_sets_status_and_derived_readiness(self):
+        row = self.row('Applied', 'Applied; audit only; revision fedcba9876543210')
+        publish.shortlist_sync(row, dict(bucket='Rejected', next_action='Closed.'), self.REV)
+        self.assertEqual(row[16:20], ['Rejected', 'Closed.', '', f'Rejected; audit only; revision {self.REV}'])
+
+    def test_applied_bucket_never_downgrades_a_finer_stage(self):
+        row = self.row('Interviewing', 'Applied; audit only; revision fedcba9876543210')
+        publish.shortlist_sync(row, dict(bucket='Applied', next_action='Await result.'), self.REV)
+        self.assertEqual(row[16], 'Interviewing')
+        row = self.row('Not contacted', 'free text kept')
+        publish.shortlist_sync(row, dict(bucket='Applied', next_action='Await result.'), self.REV)
+        self.assertEqual((row[16], row[19]), ('Applied', 'free text kept'))
+
+    def test_explicit_status_wins(self):
+        row = self.row('Applied', 'Applied; audit only; revision fedcba9876543210')
+        publish.shortlist_sync(row, dict(bucket='Applied', next_action='Round 2 done.'), self.REV, 'Interviewing')
+        self.assertEqual(row[16], 'Interviewing')
+
+    def test_unknown_explicit_status_is_refused(self):
+        state = publish.load_current()
+        base_path = publish.base_path()
+        pid = state['jobs'][0]['pool_id']
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            spec = root / 'spec.json'
+            spec.write_text(json.dumps(dict(label='fixture', date='2026-11-25', outdir='plan', shortlist_status={pid: 'Hired?'})))
+            with patch.object(publish, 'ROOT', root), patch.object(publish, 'base_path', return_value=base_path), patch.object(publish, 'load_current', return_value=copy.deepcopy(state)):
+                with self.assertRaisesRegex(AssertionError, 'not one of'):
+                    publish.plan(spec)
+
+
 if __name__ == '__main__':
     unittest.main()

@@ -86,6 +86,10 @@ def check():
         for r in shortlist:
             if len(r) > 19 and r[3:5] == [j['company'], j['original_title']]:
                 assert r[17] == j['next_action'] and rev in r[19]
+                closed = {'Rejected': 'Rejected', 'Withdrawn': 'Withdrawn'}.get(j['bucket'])
+                assert not closed or r[16] == closed, f"Shortlist status {r[16]!r} for {j['pool_id']} ({j['bucket']})"
+                derived = re.match(r'^(.+); audit only; revision [0-9a-f]{16}$', str(r[19]))
+                assert not derived or derived.group(1) == j['bucket'], f"Shortlist readiness {r[19]!r} for {j['pool_id']} ({j['bucket']})"
                 overlaps += 1
     for r in shortlist:
         if len(r) > 19 and r[1] == 'Closed':

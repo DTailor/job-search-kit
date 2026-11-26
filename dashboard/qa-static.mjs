@@ -44,7 +44,8 @@ evaluate("state.scope='all';state.query='';state.stage='all'");assert.equal(eval
 evaluate("state.scope='current';state.stage='Applied'");assert.equal(evaluate('filteredOpportunities().length'),DATA.opportunities.filter(r=>r.group==='current'&&r.stage==='Applied').length);
 if(DATA.companies.length){evaluate(`state.companyQuery=${JSON.stringify(DATA.companies[0].company)}`);assert.ok((evaluate('companyResults()').match(/class="company-card"/g)||[]).length>=1);}
 evaluate("state.companyQuery='no-such-company-xyz'");assert.match(evaluate('companyResults()'),/No company checks match/);
-const hasTable=text=>/^\s*\|?\s*:?-{3,}/m.test(text||'');
+// Same rule as markdown(): a line containing '|' followed by a delimiter row. A bare '---' separator is not a table.
+const hasTable=text=>{const l=(text||'').split('\n');return l.some((x,i)=>x.includes('|')&&i+1<l.length&&/^\s*\|?\s*:?-{3,}/.test(l[i+1]));};
 evaluate("openDocument('plan')");let html=elements.get('#detail-dialog').innerHTML;
 assert.ok(!html.includes('source-document'),'No raw-document dump');
 if(hasTable(DATA.planDocument))assert.ok(html.includes('document-table'),'Plan must render Markdown tables');

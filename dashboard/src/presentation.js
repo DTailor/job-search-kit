@@ -140,7 +140,7 @@ function inlineMarkdown(text,base=UI.companiesBase||''){
   return esc(text).replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>').replace(/`([^`]+)`/g,'<code>$1</code>').replace(/LINKTOKEN(\d+)END/g,(_,i)=>links[Number(i)]||'');
 }
 function markdown(text,base=UI.companiesBase||''){
-  const lines=(text||'').split('\n');let out='',list=null,inCode=false,code=[];
+  const lines=text.split('\n');let out='',list=null,inCode=false,code=[];
   const closeList=()=>{if(list){out+=`</${list}>`;list=null;}};
   const tableCells=line=>line.trim().replace(/^\||\|$/g,'').split('|').map(x=>x.trim());
   for(let i=0;i<lines.length;i++){
@@ -183,7 +183,7 @@ function openResearch(id){
 function insights(){
   const INS=UI.insights||{},c=DATA.poolCounts,curr=current(),stages=['Applied','Recruiter lead','Technical interview expected','Task submitted'];
   const parts=[['Applied','Submitted applications',c.buckets.Applied||0,'pool-priority'],['Priority screen','Start here',c.priority,'pool-priority','target'],['Screen first','Other candidates',c.screening,'pool-screen','screen'],['Reserve / stretch','Reserves / stretches',c.reserves,'pool-reserve','reserve'],['Risk hold','Company concerns',c.buckets['Risk hold']||0,'pool-hold'],['Unverified','Needs verification',c.buckets.Unverified||0,'pool-unknown'],['Exclude current role','Outside criteria',c.buckets['Exclude current role']||0,'pool-excluded'],['Vacancy closed','Closed originals',c.buckets['Vacancy closed']||0,'pool-closed']];
-  const inventory=[['current','Current processes'],['older','Older conversations'],['hold','Paused by you'],['platform','Platform review'],['closed','Rejected applications'],['archived','Portal archived'],['declined','Not pursuing']].map(([group,label])=>[label,DATA.opportunities.filter(r=>r.group===group).length]);
+  const inventory=[['current','Current processes'],['older','Older conversations'],['hold','Paused by you'],['platform','Platform review'],['closed','Rejected or closed by employer'],['archived','Portal archived'],['declined','Not pursuing']].map(([group,label])=>[label,DATA.opportunities.filter(r=>r.group===group).length]);
   const max=Math.max(...stages.map(s=>curr.filter(r=>r.stage===s).length),1);
   return heading('','Understand the whole search','Candidate jobs, submitted applications and older conversations are different populations.')+`
   <section class="panel pool-composition"><div class="panel-heading"><div><h2>What happened to the ${c.pool} reviewed roles?</h2><p>${c.queue} are still worth screening. The remaining ${c.audit_only} have a documented reason to stay outside this round.</p></div></div><div class="pool-stack" role="img" aria-label="${parts.map(x=>x[1]+': '+x[2]).join(', ')}">${parts.map(([,label,n,cls])=>`<span class="${cls}" style="flex:${n}" title="${esc(label)}: ${n}"></span>`).join('')}</div><div class="pool-legend">${parts.map(([bucket,label,n,cls,group])=>`<button ${group?`data-insight-group="${group}"`:`data-audit-bucket="${esc(bucket)}"`}><i class="${cls}"></i><span>${label}</span><strong>${n}</strong>${icon('arrow')}</button>`).join('')}</div><p class="metric-note">These categories describe one research snapshot. They are not stages of a conversion funnel or a prediction of offers.</p></section>
